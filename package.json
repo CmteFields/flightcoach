@@ -1,0 +1,19 @@
+{
+  "name": "flightcoach",
+  "version": "1.0.0",
+  "description": "Painel interativo Flight Coach - Miss\u00e3o 01",
+  "main": "src/App.tsx",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "typescript": "^5.2.2"
+  }
+}
