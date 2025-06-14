@@ -5,7 +5,6 @@ function PainelMissao() {
   const [indice, setIndice] = useState(0)
   const [checklist, setChecklist] = useState<{ [id: string]: boolean }>({})
   const [liberado, setLiberado] = useState(false)
-  const [log, setLog] = useState<string[]>([])
   const [tempos, setTempos] = useState<number[]>([])
   const [inicioEtapa, setInicioEtapa] = useState(Date.now())
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -15,9 +14,6 @@ function PainelMissao() {
     const estadoInicial: Record<string, boolean> = {}
     etapaAtual.checklist.forEach((item) => {
       estadoInicial[item.id] = item.tipo === 'auto'
-      if (item.tipo === 'auto') {
-        setLog((prev) => [...prev, `✅ ${item.label}`])
-      }
     })
     setChecklist(estadoInicial)
     setLiberado(false)
@@ -37,14 +33,7 @@ function PainelMissao() {
   }
 
   const marcarItem = (id: string) => {
-    setChecklist((prev) => {
-      const novo = { ...prev, [id]: !prev[id] }
-      if (!prev[id]) {
-        const label = etapaAtual.checklist.find((i) => i.id === id)?.label
-        setLog((log) => [...log, `☑️ ${label}`])
-      }
-      return novo
-    })
+    setChecklist((prev) => ({ ...prev, [id]: !prev[id] }))
   }
 
   const avancar = () => {
@@ -53,20 +42,7 @@ function PainelMissao() {
     if (indice < etapas.length - 1) setIndice((i) => i + 1)
   }
 
-  const exportarLog = (tipo: 'txt' | 'json') => {
-    const blob = new Blob(
-      [tipo === 'json' ? JSON.stringify(log, null, 2) : log.join('\n')],
-      { type: tipo === 'json' ? 'application/json' : 'text/plain' }
-    )
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = tipo === 'json' ? 'log_missao.json' : 'log_missao.txt'
-    a.click()
-  }
-
   const finalizado = indice === etapas.length - 1 && liberado
-  const nota = ((log.length / (etapas.length * 2)) * 10).toFixed(1)
   const tempoTotal = tempos.reduce((a, b) => a + b, 0)
 
   return (
@@ -124,30 +100,10 @@ function PainelMissao() {
             <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
               <h3 className="text-lg font-bold text-green-800 mb-2">🏁 Missão Finalizada</h3>
               <p className="text-sm text-gray-800 mb-1"><strong>Tempo total:</strong> {tempoTotal} segundos</p>
-              <p className="text-sm text-gray-800 mb-1"><strong>Eventos registrados:</strong> {log.length}</p>
-              <p className="text-sm text-gray-800"><strong>Nota estimada:</strong> {nota} / 10</p>
-              <div className="mt-4 flex space-x-3">
-                <button
-                  onClick={() => exportarLog('txt')}
-                  className="px-4 py-2 rounded bg-gray-800 text-white hover:bg-black text-sm"
-                >Exportar .txt</button>
-                <button
-                  onClick={() => exportarLog('json')}
-                  className="px-4 py-2 rounded bg-indigo-700 text-white hover:bg-indigo-800 text-sm"
-                >Exportar .json</button>
-              </div>
+              <p className="text-sm text-gray-800">Parabéns, missão concluída com sucesso!</p>
             </div>
           )}
         </div>
-      </div>
-
-      <div className="mt-6 bg-white p-4 rounded-2xl shadow border">
-        <h3 className="font-semibold mb-2 text-gray-800">📝 Log de Ações</h3>
-        <ul className="text-sm text-gray-700 space-y-1 max-h-60 overflow-y-auto bg-gray-50 p-3 rounded border">
-          {log.map((entry, i) => (
-            <li key={i}>{entry}</li>
-          ))}
-        </ul>
       </div>
     </div>
   )
