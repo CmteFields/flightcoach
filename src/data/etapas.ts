@@ -1,1 +1,1 @@
-export const etapas = [...]
+// etapas.ts será adicionado manualmente
